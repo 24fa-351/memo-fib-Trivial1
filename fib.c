@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 // Define the widest possible integer type
 typedef uint64_t fib_type;
@@ -32,15 +31,17 @@ fib_type fib_i_core(fib_type n) {
 
 // Wrapper recursive Fibonacci function (with memoization)
 fib_type fib_r(fib_type n) {
-    if (n <= 0) return 0;
+    if (n == 1) return 0; // Base case
+    if (n == 2) return 1; // Base case
     if (memo[n] != -1) return memo[n];
-    memo[n] = fib_r_core(n - 1) + fib_r_core(n - 2);
+    memo[n] = fib_r(n - 1) + fib_r(n - 2);
     return memo[n];
 }
 
 // Wrapper iterative Fibonacci function (with memoization)
 fib_type fib_i(fib_type n) {
-    if (n <= 0) return 0;
+    if (n == 1) return 0; // Base case
+    if (n == 2) return 1; // Base case
     if (memo[n] != -1) return memo[n];
     memo[n] = fib_i_core(n);
     return memo[n];
@@ -50,6 +51,10 @@ fib_type fib_i(fib_type n) {
 void initialize_memo(fib_type n) {
     memo_size = n + 1;
     memo = (fib_type *)malloc(sizeof(fib_type) * memo_size);
+    if (!memo) {
+        printf("Error: Memory allocation failed.\n");
+        exit(1);
+    }
     for (int i = 0; i < memo_size; i++) {
         memo[i] = -1; // Initialize all values to -1
     }
@@ -57,6 +62,7 @@ void initialize_memo(fib_type n) {
 
 // Main program
 int main(int argc, char *argv[]) {
+    // Validate input arguments
     if (argc != 3) {
         printf("Usage: ./fib <integer> <method (r/i)>\n");
         return 1;
